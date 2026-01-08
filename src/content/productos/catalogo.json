@@ -1,0 +1,141 @@
+{
+  "catalogo": [
+    {
+      "id": "minis",
+      "nombre": "Minis",
+      "categoria": "Paletas",
+      "permiteVariado": true,
+      "precios": { "menudeo": 5, "medio": 4, "mayoreo": 3 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pMini.jpg"
+    },
+    {
+      "id": "paleta-chica",
+      "nombre": "Paleta Chica",
+      "categoria": "Paletas",
+      "permiteVariado": true,
+      "precios": { "menudeo": 8, "medio": 7, "mayoreo": 5 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pChica.jpg"
+    },
+    {
+      "id": "paleta-agua-gde",
+      "nombre": "Paleta Agua Gde",
+      "categoria": "Paletas",
+      "permiteVariado": true,
+      "precios": { "menudeo": 14, "medio": 11, "mayoreo": 8 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pAguaG.jpg"
+    },
+    {
+      "id": "paleta-leche",
+      "nombre": "Paleta Leche",
+      "categoria": "Paletas",
+      "permiteVariado": true,
+      "precios": { "menudeo": 17, "medio": 15, "mayoreo": 11 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pLeche.jpg"
+    },
+    {
+      "id": "paleta-frutas",
+      "nombre": "Paleta Frutas",
+      "categoria": "Paletas Premium",
+      "permiteVariado": true,
+      "precios": { "menudeo": 18, "medio": 16, "mayoreo": 12 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pFrutas.jpg"
+    },
+    {
+      "id": "paleta-crema",
+      "nombre": "Paleta Crema",
+      "categoria": "Paletas Premium",
+      "permiteVariado": true,
+      "precios": { "menudeo": 23, "medio": 20, "mayoreo": 16 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate", "Limón"],
+      "imagen": "/img/productos/pCrema.jpg"
+    },
+    {
+      "id": "mini-esquimal",
+      "nombre": "Mini Esquimal",
+      "categoria": "Especialidades",
+      "permiteVariado": false,
+      "precios": { "menudeo": 9, "medio": 7, "mayoreo": 5.50 },
+      "imagen": "/img/productos/esquimalMini.jpg"
+    },
+    {
+      "id": "esquimal",
+      "nombre": "Esquimal",
+      "categoria": "Especialidades",
+      "permiteVariado": false,
+      "precios": { "menudeo": 17, "medio": 15, "mayoreo": 11 },
+      "imagen": "/img/productos/esquimal.jpg"
+    },
+    {
+      "id": "sandwich",
+      "nombre": "Sandwich",
+      "categoria": "Especialidades",
+      "permiteVariado": true,
+      "precios": { "menudeo": 17, "medio": 15, "mayoreo": 11 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate"],
+      "imagen": "/img/productos/sandwich.jpg"
+    },
+    {
+      "id": "vaso-nieve-chico",
+      "nombre": "Vaso Nieve Chico",
+      "categoria": "Nieves",
+      "permiteVariado": true,
+      "precios": { "menudeo": 17, "medio": 15, "mayoreo": 11 },
+      "sabores": ["Fresa", "Vainilla", "Chocolate"],
+      "imagen": "/img/productos/vasoNieve.jpg"
+    },
+    {
+      "id": "chemisse",
+      "nombre": "Chemisse",
+      "categoria": "Especialidades",
+      "permiteVariado": false,
+      "precios": { "menudeo": 18, "medio": 16, "mayoreo": 12 },
+      "imagen": "/img/productos/chemisse.jpg"
+    },
+    {
+      "id": "bolis-rompope",
+      "nombre": "Bolis Rompope",
+      "categoria": "Bolis",
+      "permiteVariado": false,
+      "precios": { "menudeo": 13, "medio": 11, "mayoreo": 9 },
+      "imagen": "/img/productos/bRompope.jpg"
+    },
+    {
+      "id": "bolis-agua",
+      "nombre": "Bolis Agua",
+      "categoria": "Bolis",
+      "permiteVariado": true,
+      "precios": { "menudeo": 8, "medio": 7, "mayoreo": 5 },
+      "sabores": ["Fresa", "Uva", "Chicle", "Limón"],
+      "imagen": "/img/productos/bAgua.jpg"
+    },
+    {
+      "id": "campana",
+      "nombre": "Campana",
+      "categoria": "Otros",
+      "permiteVariado": false,
+      "precios": { "menudeo": 13, "medio": 10, "mayoreo": 8 },
+      "imagen": "/img/productos/campana.jpg"
+    },
+    {
+      "id": "veladoras",
+      "nombre": "Veladoras",
+      "categoria": "Otros",
+      "permiteVariado": false,
+      "precios": { "menudeo": 9, "medio": 7, "mayoreo": 6 },
+      "imagen": "/img/productos/veladora.jpg"
+    },
+    {
+      "id": "evento",
+      "nombre": "Evento",
+      "categoria": "Servicios",
+      "permiteVariado": false,
+      "precios": { "menudeo": 1, "medio": 7, "mayoreo": 6 },
+      "imagen": "/img/productos/evento.jpg"
+    }
+  ]
+}
