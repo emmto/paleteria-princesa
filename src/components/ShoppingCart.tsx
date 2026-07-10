@@ -1,9 +1,149 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { cartItems, totalQuantity, isCartOpen, removeCartItem, updateCartItemQuantity } from '../stores/cartStore';
+import { cartItems, totalQuantity, isCartOpen, removeCartItem, updateCartItemQuantity, updateFlavorQuantity } from '../stores/cartStore';
 import { getPrecioUnitario, generateWhatsAppLink, getPriceTier } from '../utils/cartLogic';
 import { clsx } from 'clsx';
 
+// --- SUB-COMPONENTE: Maneja la lógica individual de cada producto ---
+const CartItem = ({ itemKey, item, totalQuantity }) => {
+    const unitPrice = getPrecioUnitario(totalQuantity, item.precios);
+    
+    // Calcular conteos
+    const totalSelected = item.seleccionSabores 
+        ? Object.values(item.seleccionSabores).reduce((a, b) => a + b, 0)
+        : 0;
+    const unselectedCount = item.cantidad - totalSelected;
+
+    // Estado local: ¿Debemos mostrar la lista de sabores?
+    // Lógica: Si faltan sabores por elegir (unselectedCount > 0), mostrarla por defecto.
+    const [showFlavors, setShowFlavors] = useState(unselectedCount > 0);
+
+    // Efecto: Si faltan sabores, abrir la lista automáticamente.
+    // Si se completa (llega a 0), cerrar la lista automáticamente.
+    useEffect(() => {
+        if (unselectedCount > 0) {
+            setShowFlavors(true);
+        } else {
+            setShowFlavors(false);
+        }
+    }, [unselectedCount]);
+
+    return (
+        <div className="flex flex-col gap-4 p-4 border rounded-xl border-gray-100 bg-white animate-fade-in shadow-sm">
+            <div className="flex gap-4">
+                <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <img 
+                        src={`https://placehold.co/100x100/f3f4f6/db2777?text=${encodeURIComponent(item.nombre)}`} 
+                        alt={item.nombre} 
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                        <h3 className="font-bold text-gray-900 line-clamp-1">{item.nombre}</h3>
+                        
+                        {/* Resumen de sabores seleccionados */}
+                        {item.seleccionSabores && totalSelected > 0 && (
+                            <p className="text-xs text-gray-500 mt-1">
+                                {Object.entries(item.seleccionSabores)
+                                    .filter(([_, qty]) => qty > 0)
+                                    .map(([s, qty]) => `${qty} ${s}`)
+                                    .join(', ')}
+                            </p>
+                        )}
+                        
+                        {/* Botón para reabrir si está cerrado y completo */}
+                        {item.saboresDisponibles && !showFlavors && unselectedCount === 0 && (
+                            <button 
+                                onClick={() => setShowFlavors(true)}
+                                className="text-xs font-semibold text-pink-600 hover:text-pink-700 underline mt-1"
+                            >
+                                Modificar sabores
+                            </button>
+                        )}
+
+                        {!item.saboresDisponibles && item.sabor && <p className="text-sm text-gray-500">{item.sabor}</p>}
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <p className="font-medium text-red-600">${unitPrice.toFixed(2)}</p>
+                        <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200">
+                            <button 
+                                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
+                                onClick={() => updateCartItemQuantity(itemKey, item.cantidad - 1)}
+                            >-</button>
+                            <span className="w-8 text-center text-sm font-semibold">{item.cantidad}</span>
+                            <button 
+                                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors"
+                                onClick={() => updateCartItemQuantity(itemKey, item.cantidad + 1)}
+                            >+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Selector de Sabores (Condicional) */}
+            {item.saboresDisponibles && showFlavors && (
+                <div className="mt-2 bg-gray-50 p-3 rounded-lg border border-gray-100 animate-in slide-in-from-top-2 duration-200">
+                   <div className="flex justify-between items-center mb-2">
+                       <span className="text-xs font-bold text-gray-500 uppercase">Elige sabores</span>
+                       <div className="flex items-center gap-2">
+                           <span className={clsx("text-xs font-bold", unselectedCount > 0 ? "text-orange-500" : "text-green-500")}>
+                               {unselectedCount > 0 ? `Faltan ${unselectedCount}` : "¡Completo!"}
+                           </span>
+                           {/* Botón X para cerrar manualmente si se desea */}
+                           {unselectedCount === 0 && (
+                               <button onClick={() => setShowFlavors(false)} className="text-gray-400 hover:text-gray-600">
+                                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+                               </button>
+                           )}
+                       </div>
+                   </div>
+                   <div className="space-y-2">
+                       {item.saboresDisponibles.map(sabor => {
+                           const qty = item.seleccionSabores?.[sabor] || 0;
+                           return (
+                               <div key={sabor} className="flex items-center justify-between text-sm">
+                                   <span className="text-gray-700">{sabor}</span>
+                                   <div className="flex items-center gap-3">
+                                       <button 
+                                            onClick={() => updateFlavorQuantity(itemKey, sabor, -1)}
+                                            className={clsx(
+                                                "w-6 h-6 rounded-full flex items-center justify-center transition-colors",
+                                                qty > 0 ? "bg-white border border-gray-300 text-gray-600 hover:bg-gray-100" : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                            )}
+                                            disabled={qty <= 0}
+                                       >-</button>
+                                       <span className="w-4 text-center font-medium">{qty}</span>
+                                       <button 
+                                            onClick={() => updateFlavorQuantity(itemKey, sabor, 1)}
+                                            className={clsx(
+                                                "w-6 h-6 rounded-full flex items-center justify-center transition-colors",
+                                                unselectedCount > 0 ? "bg-white border border-gray-300 text-green-600 hover:border-green-500 hover:text-green-700" : "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                            )}
+                                            disabled={unselectedCount <= 0}
+                                       >+</button>
+                                   </div>
+                               </div>
+                           );
+                       })}
+                   </div>
+                   {/* Botón Listo cuando está completo */}
+                   {unselectedCount === 0 && (
+                        <button 
+                            onClick={() => setShowFlavors(false)}
+                            className="w-full mt-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded uppercase hover:bg-green-200 transition-colors"
+                        >
+                            Listo - Ocultar Sabores
+                        </button>
+                   )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+
+// --- COMPONENTE PRINCIPAL ---
 export default function ShoppingCart() {
   const $cartItems = useStore(cartItems);
   const $totalQuantity = useStore(totalQuantity);
@@ -105,40 +245,14 @@ export default function ShoppingCart() {
                 <button onClick={() => isCartOpen.set(false)} className="text-pink-600 font-medium hover:underline">Continuar comprando</button>
             </div>
           ) : (
-            items.map(([key, item]) => {
-                const unitPrice = getPrecioUnitario($totalQuantity, item.precios);
-                return (
-                    <div key={key} className="flex gap-4 animate-fade-in">
-                        <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                             <img 
-                                src={`https://placehold.co/100x100/f3f4f6/db2777?text=${encodeURIComponent(item.nombre)}`} 
-                                alt={item.nombre} 
-                                className="w-full h-full object-cover"
-                             />
-                        </div>
-                        <div className="flex-1 flex flex-col justify-between">
-                            <div>
-                                <h3 className="font-bold text-gray-900 line-clamp-1">{item.nombre}</h3>
-                                {item.sabor && <p className="text-sm text-gray-500">{item.sabor}</p>}
-                            </div>
-                            <div className="flex items-end justify-between">
-                                <p className="font-medium text-red-600">${unitPrice.toFixed(2)}</p>
-                                <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200">
-                                    <button 
-                                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors"
-                                        onClick={() => updateCartItemQuantity(key, item.cantidad - 1)}
-                                    >-</button>
-                                    <span className="w-8 text-center text-sm font-semibold">{item.cantidad}</span>
-                                    <button 
-                                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors"
-                                        onClick={() => updateCartItemQuantity(key, item.cantidad + 1)}
-                                    >+</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            })
+            items.map(([key, item]) => (
+                <CartItem 
+                    key={key} 
+                    itemKey={key} 
+                    item={item} 
+                    totalQuantity={$totalQuantity} 
+                />
+            ))
           )}
         </div>
 

@@ -64,6 +64,11 @@ const imageSrc = product.imagen
     </div>
 
     <div class="mt-2">
+        {product.permiteVariado && product.sabores && (
+            <p class="text-[14px] text-center text-gray-400 mt-1 italic">
+                * Escoge sabor(es) en el carrito
+            </p>
+        )}
         <AddToCart client:visible product={product} />
     </div>
   </div>

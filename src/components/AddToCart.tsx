@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function AddToCart({ product }: Props) {
-  const [selectedFlavor, setSelectedFlavor] = useState(product.sabores?.[0] || '');
   const [isAdded, setIsAdded] = useState(false);
   
   const handleAdd = () => {
@@ -23,7 +22,7 @@ export default function AddToCart({ product }: Props) {
       nombre: product.nombre,
       cantidad: 1,
       precios: product.precios,
-      sabor: product.permiteVariado && product.sabores ? selectedFlavor : undefined
+      saboresDisponibles: product.permiteVariado && product.sabores ? product.sabores : undefined
     };
     addCartItem(item);
     showToast(`Agregaste ${product.nombre} al carrito`);
@@ -35,23 +34,6 @@ export default function AddToCart({ product }: Props) {
 
   return (
     <div className="space-y-3">
-      {product.permiteVariado && product.sabores && (
-        <div className="relative">
-          <select 
-            className="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-pink-500 text-sm font-medium cursor-pointer"
-            value={selectedFlavor}
-            onChange={(e) => setSelectedFlavor(e.target.value)}
-          >
-            {product.sabores.map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-            <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-          </div>
-        </div>
-      )}
-      
       <button 
         onClick={handleAdd}
         disabled={isAdded}

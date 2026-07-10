@@ -12,6 +12,8 @@ export interface CartItem {
   cantidad: number;
   sabor?: string;
   precios: Precios;
+  saboresDisponibles?: string[];
+  seleccionSabores?: Record<string, number>;
 }
 
 export const getPrecioUnitario = (cantidadTotal: number, precios: Precios): number => {
@@ -31,8 +33,20 @@ export const generateWhatsAppLink = (items: CartItem[], total: number): string =
   let message = 'Hola, me gustaría hacer un pedido:\n\n';
   
   items.forEach(item => {
-    const saborStr = item.sabor ? ` (${item.sabor})` : '';
-    message += `- ${item.cantidad}x ${item.nombre}${saborStr}\n`;
+    if (item.seleccionSabores && Object.keys(item.seleccionSabores).length > 0) {
+      message += `- ${item.cantidad}x ${item.nombre}:\n`;
+      Object.entries(item.seleccionSabores).forEach(([sabor, qty]) => {
+        if (qty > 0) message += `  • ${qty}x ${sabor}\n`;
+      });
+      // Check if there are unselected items
+      const selectedCount = Object.values(item.seleccionSabores).reduce((a, b) => a + b, 0);
+      if (selectedCount < item.cantidad) {
+         message += `  • ${item.cantidad - selectedCount}x Sin sabor específico\n`;
+      }
+    } else {
+      const saborStr = item.sabor ? ` (${item.sabor})` : '';
+      message += `- ${item.cantidad}x ${item.nombre}${saborStr}\n`;
+    }
   });
 
   message += `\nTotal estimado: $${total.toFixed(2)}`;
