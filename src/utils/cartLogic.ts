@@ -29,7 +29,7 @@ export const getPriceTier = (cantidadTotal: number): PriceTier => {
 }
 
 export const generateWhatsAppLink = (items: CartItem[], total: number): string => {
-  const phoneNumber = '523111430040';
+  const phoneNumber = '520000000';
   let message = 'Hola, me gustaría hacer un pedido:\n\n';
   
   items.forEach(item => {
