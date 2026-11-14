@@ -18,6 +18,11 @@ const { title = "Helados la Princesa | Calidad y Tradición" } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content="Paletería y Helados la Princesa en Tepic, Nayarit. Paletas, nieves, bolis y especialidades con precios de menudeo, medio mayoreo y mayoreo." />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content="Disfruta de la mejor calidad en paletas, nieves y bolis. Precios especiales de mayoreo ideales para tus eventos o negocio." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/img/logo/logo.png" />
     <title>{title}</title>
   </head>
   <body class="bg-gray-50 text-gray-900 font-sans antialiased selection:bg-pink-100 selection:text-pink-900">
@@ -29,7 +34,7 @@ const { title = "Helados la Princesa | Calidad y Tradición" } = Astro.props;
       <slot />
     </main>
 
-    <footer class="bg-gray-900 text-white py-12 mt-20">
+    <footer id="nosotros" class="bg-gray-900 text-white py-12 mt-20">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
@@ -40,7 +45,7 @@ const { title = "Helados la Princesa | Calidad y Tradición" } = Astro.props;
             </div>
             <div>
                 <h4 class="font-bold text-lg mb-4">Contacto</h4>
-                <p class="text-gray-400 text-sm mb-2">📞 52 311 212 6761</p>
+                <p class="text-gray-400 text-sm mb-2">📞 52 000 0000</p>
                 <p class="text-gray-400 text-sm">📍 Tepic, Nayarit</p>
             </div>
             <div>

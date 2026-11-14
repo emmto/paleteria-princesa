@@ -10,6 +10,7 @@ export interface CartItem {
   id: string;
   nombre: string;
   cantidad: number;
+  imagen?: string;
   sabor?: string;
   precios: Precios;
   saboresDisponibles?: string[];

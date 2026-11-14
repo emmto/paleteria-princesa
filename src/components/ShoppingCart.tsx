@@ -1,11 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { cartItems, totalQuantity, isCartOpen, removeCartItem, updateCartItemQuantity, updateFlavorQuantity } from '../stores/cartStore';
-import { getPrecioUnitario, generateWhatsAppLink, getPriceTier } from '../utils/cartLogic';
+import { cartItems, totalQuantity, isCartOpen, initCartFromStorage, updateCartItemQuantity, updateFlavorQuantity } from '../stores/cartStore';
+import { getPrecioUnitario, generateWhatsAppLink, getPriceTier, type CartItem as CartItemType } from '../utils/cartLogic';
 import { clsx } from 'clsx';
 
+interface CartItemProps {
+    itemKey: string;
+    item: CartItemType;
+    totalQuantity: number;
+}
+
 // --- SUB-COMPONENTE: Maneja la lógica individual de cada producto ---
-const CartItem = ({ itemKey, item, totalQuantity }) => {
+const CartItem = ({ itemKey, item, totalQuantity }: CartItemProps) => {
     const unitPrice = getPrecioUnitario(totalQuantity, item.precios);
     
     // Calcular conteos
@@ -33,7 +39,7 @@ const CartItem = ({ itemKey, item, totalQuantity }) => {
             <div className="flex gap-4">
                 <div className="w-20 h-20 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
                     <img 
-                        src={`https://placehold.co/100x100/f3f4f6/db2777?text=${encodeURIComponent(item.nombre)}`} 
+                        src={item.imagen || `https://placehold.co/100x100/f3f4f6/db2777?text=${encodeURIComponent(item.nombre)}`} 
                         alt={item.nombre} 
                         className="w-full h-full object-cover"
                     />
@@ -153,8 +159,9 @@ export default function ShoppingCart() {
   const items = Object.entries($cartItems);
   const currentTier = getPriceTier($totalQuantity);
 
-  // Close on Escape key
+  // Hydrate cart and close on Escape key
   useEffect(() => {
+    initCartFromStorage();
     const handleEsc = (e: KeyboardEvent) => {
         if (e.key === 'Escape') isCartOpen.set(false);
     };

@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import AddToCart from './AddToCart';
 
 interface Props {
-  product: CollectionEntry<'productos'>['data'];
+  product: CollectionEntry<'productos'>['data']['catalogo'][number];
 }
 
 const { product } = Astro.props;

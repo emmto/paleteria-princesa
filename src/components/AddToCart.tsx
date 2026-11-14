@@ -7,6 +7,7 @@ interface Props {
   product: {
     id: string;
     nombre: string;
+    imagen?: string;
     precios: { menudeo: number; medio: number; mayoreo: number };
     sabores?: string[];
     permiteVariado: boolean;
@@ -20,6 +21,7 @@ export default function AddToCart({ product }: Props) {
     const item: CartItemInput = {
       id: product.id,
       nombre: product.nombre,
+      imagen: product.imagen,
       cantidad: 1,
       precios: product.precios,
       saboresDisponibles: product.permiteVariado && product.sabores ? product.sabores : undefined

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { totalQuantity, isCartOpen } from '../stores/cartStore';
+import { totalQuantity, isCartOpen, initCartFromStorage } from '../stores/cartStore';
 
 export default function Header() {
   const $totalQuantity = useStore(totalQuantity);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    initCartFromStorage();
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
