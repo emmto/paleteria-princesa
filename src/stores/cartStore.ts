@@ -1,9 +1,10 @@
 import { atom, map, computed } from 'nanostores';
-import type { CartItem, Precios } from '../utils/cartLogic';
+import { getCartTotal, type CartItem, type Precios } from '../utils/cartLogic';
 
 export type CartItemInput = Omit<CartItem, 'precios'> & { precios: Precios };
 
 const CART_STORAGE_KEY = 'paleteria-princesa-cart';
+const MAX_ITEM_QUANTITY = 9999;
 let isStorageInitialized = false;
 
 // Key is the product ID
@@ -37,18 +38,20 @@ export function initCartFromStorage() {
 }
 
 export function addCartItem(item: CartItemInput) {
+  const safeQty = Math.min(MAX_ITEM_QUANTITY, Math.max(1, Math.floor(item.cantidad)));
   const existingItems = cartItems.get();
   const key = item.id;
 
   if (existingItems[key]) {
     cartItems.setKey(key, {
         ...existingItems[key],
-        cantidad: existingItems[key].cantidad + item.cantidad
+        cantidad: Math.min(MAX_ITEM_QUANTITY, existingItems[key].cantidad + safeQty)
     });
   } else {
     cartItems.setKey(key, { 
         ...item, 
         id: item.id,
+        cantidad: safeQty,
         seleccionSabores: item.saboresDisponibles ? {} : undefined 
     });
   }
@@ -80,25 +83,53 @@ export function updateFlavorQuantity(itemId: string, flavor: string, delta: numb
     cartItems.setKey(itemId, { ...item, seleccionSabores: newSelection });
 }
 
+/**
+ * Evenly distributes any remaining unselected pieces across available flavors.
+ */
+export function fillAssortedFlavors(itemId: string) {
+    const item = cartItems.get()[itemId];
+    if (!item || !item.saboresDisponibles || item.saboresDisponibles.length === 0) return;
+
+    const currentSelection = { ...(item.seleccionSabores || {}) };
+    const totalSelected = Object.values(currentSelection).reduce((a, b) => a + b, 0);
+    const remaining = item.cantidad - totalSelected;
+    if (remaining <= 0) return;
+
+    const flavors = item.saboresDisponibles;
+    for (let i = 0; i < remaining; i++) {
+        const flavor = flavors[i % flavors.length];
+        currentSelection[flavor] = (currentSelection[flavor] || 0) + 1;
+    }
+
+    cartItems.setKey(itemId, { ...item, seleccionSabores: currentSelection });
+}
+
 export function removeCartItem(key: string) {
     const current = cartItems.get();
     const { [key]: _, ...rest } = current;
     cartItems.set(rest);
 }
 
+export function clearCart() {
+    cartItems.set({});
+}
+
 export function updateCartItemQuantity(key: string, quantity: number) {
     const item = cartItems.get()[key];
-    if (quantity <= 0) {
+    const normalizedQty = Math.floor(quantity);
+    if (isNaN(normalizedQty) || normalizedQty <= 0) {
         removeCartItem(key);
         return;
     }
     if (!item) return;
 
+    const clampedQty = Math.min(MAX_ITEM_QUANTITY, normalizedQty);
+
     let updatedFlavors = item.seleccionSabores;
     if (updatedFlavors) {
         const totalSelected = Object.values(updatedFlavors).reduce((a, b) => a + b, 0);
-        if (totalSelected > quantity) {
-            let excess = totalSelected - quantity;
+        if (totalSelected > clampedQty) {
+            let excess = totalSelected - clampedQty;
             const trimmed = { ...updatedFlavors };
             for (const [flavor, qty] of Object.entries(trimmed)) {
                 if (excess <= 0) break;
@@ -117,11 +148,15 @@ export function updateCartItemQuantity(key: string, quantity: number) {
 
     cartItems.setKey(key, {
         ...item,
-        cantidad: quantity,
+        cantidad: clampedQty,
         ...(updatedFlavors !== undefined ? { seleccionSabores: updatedFlavors } : {}),
     });
 }
 
 export const totalQuantity = computed(cartItems, items => {
     return Object.values(items).reduce((sum, item) => sum + item.cantidad, 0);
+});
+
+export const cartTotal = computed(cartItems, items => {
+    return getCartTotal(Object.values(items));
 });
